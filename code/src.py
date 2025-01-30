@@ -124,20 +124,32 @@ plt.savefig('../results/images/DP_boxplot_after.png')
 '''Modeling
     1| OLS Model'''
 
+# Define the split ratio
+split_ratio = 0.8
+
+# Split index
+split_index = int(len(df_filtered) * split_ratio)
+
+# Split data
+train_df = df_filtered[:split_index]
+test_df = df_filtered[split_index:]
+
+#
 lable = df_filtered['arpu_9']
 features = df_filtered.drop('arpu_9', axis=1)
 
+X_train = train_df[features.columns] 
+X_test = test_df[features.columns] 
+y_train = train_df['arpu_9']
+y_test = test_df['arpu_9']
 
-X_train, X_test, y_train, y_test = train_test_split(df_filtered[features.columns], df_filtered['arpu_9'] , 
-                                   random_state=104,  
-                                   test_size=0.20,  
-                                   shuffle=True)
+activation = train_df.iloc[7,:]
 
-X_train.to_csv("../data/dataset_feature_training.csv")
-X_test.to_csv("../data/dataset_feature_testing.csv")
+train_df.to_csv("../data/training_data.csv")
+test_df.to_csv("../data/test_date.csv")
+activation.to_csv("../data/activation_data.csv")
 
-y_train.to_csv("../data/dataset_lable_training.csv")
-y_test.to_csv("../data/dataset_lable_testing.csv")
+df_filtered.to_csv("../data/joint_data_collection.csv")
 
 #OLS model
 

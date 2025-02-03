@@ -8,7 +8,7 @@ services:
     - sh
     - "-c"
     - |
-      rm -rf /tmp/testSender/knowledgeBase/ && mkdir -p /tmp/testSender/knowledgeBase/ && cp -r /knowledgeBase/ /tmp/testSender/;
+      rm -rf /tmp/knowledgeBase/ && mkdir -p /tmp/knowledgeBase/ && cp -r /knowledgeBase/ /tmp/;
   activation_base_testSender:
     image: olexuni/activationbase_arpuprediction
     volumes:
@@ -17,7 +17,7 @@ services:
     - sh
     - "-c"
     - |
-      rm -rf /tmp/testSender/activationBase/ && mkdir -p /tmp/testSender/activationBase/ && cp -r /activationBase/ /tmp/testSender/;
+      rm -rf /tmp/activationBase/ && mkdir -p /tmp/activationBase/ && cp -r /activationBase/ /tmp/;
   code_base_testSender:
     image: olexuni/codebase_arpuprediction
     volumes:
@@ -29,8 +29,8 @@ services:
     - sh
     - "-c"
     - |
-      rm -rf /tmp/testSender/codeBase/ && mkdir -p /tmp/testSender/codeBase/ && cp -r /codeBase/ /tmp/testSender/;
-      python3 /tmp/testSender/codeBase/apply_annSolution.py;
+      rm -rf /tmp/codeBase/ && mkdir -p /tmp/codeBase/ && cp -r /codeBase/ /tmp/;
+      python3 /tmp/codeBase/apply_annSolution.py;
 volumes:
   ai_system:
     external: true

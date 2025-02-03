@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  knowledge_base_testSender:
+    image: olexuni/knowledgebase_arpuprediction
+    volumes:
+       - ai_system:/tmp
+    command:
+    - sh
+    - "-c"
+    - |
+      rm -rf /tmp/testSender/knowledgeBase/ && mkdir -p /tmp/testSender/knowledgeBase/ && cp -r /knowledgeBase/ /tmp/testSender/;
+  activation_base_testSender:
+    image: olexuni/activationbase_arpuprediction
+    volumes:
+       - ai_system:/tmp
+    command:
+    - sh
+    - "-c"
+    - |
+      rm -rf /tmp/testSender/activationBase/ && mkdir -p /tmp/testSender/activationBase/ && cp -r /activationBase/ /tmp/testSender/;
+  code_base_testSender:
+    image: olexuni/codebase_arpuprediction
+    volumes:
+       - ai_system:/tmp
+    depends_on:
+      - "knowledge_base_testSender"
+      - "activation_base_testSender"
+    command:
+    - sh
+    - "-c"
+    - |
+      rm -rf /tmp/testSender/codeBase/ && mkdir -p /tmp/testSender/codeBase/ && cp -r /codeBase/ /tmp/testSender/;
+      python3 /tmp/testSender/codeBase/apply_olsSolution.py;
+volumes:
+  ai_system:
+    external: true

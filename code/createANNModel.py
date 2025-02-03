@@ -1,4 +1,3 @@
-# %%
 import requests
 from bs4 import BeautifulSoup
 from tabulate import tabulate
@@ -10,209 +9,174 @@ from scipy import stats
 import statsmodels.api as sm
 from statsmodels.tools import add_constant
 import numpy as np
-from statsmodels.base.model import LikelihoodModel
-from statsmodels.regression.linear_model import OLS
-from statsmodels.multivariate.manova import MANOVA
-from statsmodels.multivariate.multivariate_ols import _MultivariateOLS
-import statsmodels.multivariate.tests.results as path
-from sklearn.model_selection import train_test_split
-import matplotlib.pyplot as plt
-import sys
-sys.path.append(r'\code')
-from LinearRegDiagnostic import LinearRegDiagnostic
 import tensorflow as tf
+import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error, r2_score
-from tensorflow.keras.models import load_model
+import os
+
+# Define the directory path
+# learning_base_dir = r'./learningBase'
+
+# Check if the directory exists, if not, create it
+# if not os.path.exists(learning_base_dir):
+#     os.makedirs(learning_base_dir)
+
+# Define the split ratio
+# split_ratio = 0.8
+
+# Read data
+# df_filtered = pd.read_csv("../data/joint_data_collection.csv")
 
 # Split index
-split_index = int(len(df_filtered) * split_ratio)
+# split_index = int(len(df_filtered) * split_ratio)
 
 # Split data
-train_df = df_filtered[:split_index]
-test_df = df_filtered[split_index:]
+# train_df = df_filtered[:split_index]
+# test_df = df_filtered[split_index:]
 
-#
-lable = df_filtered['arpu_9']
-features = df_filtered.drop('arpu_9', axis=1)
+train_df = pd.read_csv('tmp/learningBase/train/training_data.csv')
+test_df = pd.read_csv('tmp/learningBase/validation/test_data.csv')
 
-train_df = pd.read_csv('.')
 
-X_train = train_df[features.columns] 
-X_test = test_df[features.columns] 
+# Define features and target
+features = train_df.drop('arpu_9', axis=1)
+lable = train_df['arpu_9']
+
+X_train = train_df[features.columns]
+X_test = test_df[features.columns]
 y_train = train_df['arpu_9']
 y_test = test_df['arpu_9']
 
-activation = train_df.iloc[7,:]
-
-train_df.to_csv("../data/training_data.csv")
-test_df.to_csv("../data/test_date.csv")
-activation.to_csv("../data/activation_data.csv")
-
-df_filtered.to_csv("../data/joint_data_collection.csv")
-
-#OLS model
-
-X = add_constant(X_train)
-Y = y_train
-
-ols_m = sm.OLS(Y,X).fit()
-
-ols_m.save('../results/models/OLS_model.pickle')
-
-
-print(ols_m.summary())
-
-# %%
-'''OLS Model visualization
-'''
-
-cls = LinearRegDiagnostic(ols_m)
-vif, fig, ax = cls()
-fig.savefig('../results/images/M_DiagnosticPlots.png')
-print(vif)
-
-# %%
-''''Modeling:
-        ANN'''
-
-input_feature = X_train.values  
-target_feature = y_train.values  
-test_target = y_test.values
-test_feature = X_test.values
- 
-# Defining the TensorFlow feedforward neural network
+# Define the ANN model
 model = tf.keras.Sequential([
-    tf.keras.layers.Input(shape = (X_train.shape[1],)),# Input layer
-    tf.keras.layers.Dense(64, activation='relu'),  # Hidden layer with 64 neurons
-    tf.keras.layers.Dense(32, activation='relu'),  # Hidden layer with 32 neurons
-    tf.keras.layers.Dense(1, activation= 'linear')  # Output layer with 1 neuron
+    tf.keras.layers.Input(shape=(X_train.shape[1],)),  # Input layer
+    tf.keras.layers.Dense(64, activation='relu'),  # Hidden layer 1
+    tf.keras.layers.Dense(32, activation='relu'),  # Hidden layer 2
+    tf.keras.layers.Dense(1, activation='linear')  # Output layer
 ])
- 
-# Compiling the model
+
+# Compile the model
 model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
-              loss='mse',  # Mean squared error
+              loss='mse',  # Mean squared error loss
               metrics=['mae'])
- 
-# Training the model
-model.fit(X_train, target_feature, epochs=50, batch_size=32, verbose=1)
- 
- #Save model
-model.save('../results/models/ANN_model.keras')
+
+# Train the model
+history = model.fit(X_train, y_train, epochs=50, batch_size=32, verbose=1)
+
+# Save model
+model.save('tmp/knowledgeBase/currentAiSolution.keras')
+
+# Create a DataFrame from the training history
+history_df = pd.DataFrame(history.history)
+# Define the directory path again
+learning_base_dir = 'tmp/learningBase'
+
+
+# Store evaluation results in markdown
+history_df.to_markdown(learning_base_dir + '/annEvaluation.md')  # Store evaluation results in markdown
+
+# Total training iterations
+num_epochs = len(history_df['loss'])
+num_batches_per_epoch = len(X_train) // 32  # Assuming batch size is 32
+num_iterations = num_epochs * num_batches_per_epoch
+
+# Final loss and MAE
+final_loss = history_df['loss'].iloc[-1]  # Last loss value
+final_mae = history_df['mae'].iloc[-1]  # Last MAE value
+
+# Print the results
+print(f"Total Training Iterations: {num_iterations}")
+print(f"Final Loss: {final_loss}")
+print(f"Final MAE: {final_mae}")
 
 # Evaluate the model on the test set
-loss, mae = model.evaluate(X_test, test_target, verbose=0)
+loss, mae = model.evaluate(X_test, y_test, verbose=0)
 print(f"Test Loss: {loss}, Test MAE: {mae}")
 
-# %%
-'''ANN Model Visualisation'''
+# Generate predictions
+y_pred = model.predict(X_test).flatten()  # Ensure predictions are 1D
 
-# Generate predictions from the ANN model
-
-y_pred = model.predict(X_test).flatten()  # Ensure predictions are 1D if needed
- 
-# Calculate best-fit line (y_pred as a function of y_test)
-
+# Calculate best-fit line
 slope, intercept = np.polyfit(y_test, y_pred, 1)
- 
-# Create best-fit line
-
 best_fit_line = slope * y_test + intercept
- 
+
 # Calculate performance metrics
-
 mse = mean_squared_error(y_test, y_pred)
-
 r2 = r2_score(y_test, y_pred)
- 
-# Plot the results
+
+# Plot training and testing curves
 plt.figure(figsize=(15, 6))
 
+# Plot training loss
+plt.subplot(1, 2, 1)
+plt.plot(range(1, num_epochs + 1), history_df['loss'], label='Training Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.title('Training Loss over Epochs')
+plt.legend()
 
-# plt.scatter(y_test, y_pred, alpha=0.6, color='blue', label='Model Predictions')
-plt.subplot(1,2,1)
+# Plot MAE
+plt.subplot(1, 2, 2)
+plt.plot(range(1, num_epochs + 1), history_df['mae'], label='Training MAE')
+plt.xlabel('Epochs')
+plt.ylabel('MAE')
+plt.title('Training MAE over Epochs')
+plt.legend()
 
-# Plot actual values in one color (e.g., red)
+# Save the training curves plot
+plt.savefig(learning_base_dir + '/annTrainingCurves.png')
+
+# Diagnostic Plot (Scatter Plot of Test vs Predicted)
+plt.figure(figsize=(15, 6))
+
+#Plot actual vs predicted values
+# plt.subplot(1, 2, 1)
+# plt.scatter(y_test, y_pred, alpha=0.6, color='blue', label='Predicted Values')
+# plt.plot(y_test, best_fit_line, color='red', linewidth=2, label='Best Fit Line')
+# plt.xlabel('True Values (y_test)')
+# plt.ylabel('Predicted Values (y_pred)')
+# plt.title('Test vs Predicted Values')
+# plt.legend()
+
+# Plot for one feature, e.g., 'offnet_mou_6'
+plt.subplot(1, 2, 2)
 plt.scatter(y_test, X_test['offnet_mou_6'], alpha=0.6, color='yellow', label='offnet minutes')
- # Plot predicted values in a different color (e.g., green)
 plt.scatter(y_test, y_pred, alpha=0.6, color='green', label='Predicted Values')
-
 plt.plot(y_test, best_fit_line, color='red', linewidth=2, label='Best Fit Line')
- 
-# Add annotations
+plt.xlabel('True Values (y_test)')
+plt.ylabel('Predicted Values (y_pred)')
+plt.title('Offnet Minutes vs Predicted Values')
+plt.legend()
 
-plt.title('ANN Predictions vs Best Fit Line[one feature]', fontsize=14)
+# Save the diagnostic plot
+plt.savefig(learning_base_dir + '/annDiagnosticPlot.png')
 
-plt.xlabel('offnet minutes', fontsize=12)
-
-plt.ylabel('Predicted Values (y_pred)', fontsize=12)
-
-plt.legend(fontsize=10)
- 
-# Display metrics
-
-plt.text(
-
-    0.05, 0.95,
-
-    f"MSE: {mse:.4f}\nR²: {r2:.4f}",
-
-    fontsize=10,
-
-    transform=plt.gca().transAxes,
-
-    verticalalignment='top',
-
-    bbox=dict(facecolor='white', alpha=0.8, edgecolor='gray')
-
-)
- 
-plt.grid(alpha=0.3)
-
-#second plot
-plt.subplot(1,2,2)
-# Plot actual values
-
-plt.scatter(y_test, y_pred, alpha=0.6, color='blue', label='Predicted Values',  )
-
+# Scatter plot with R2 and MSE as annotation
+plt.figure(figsize=(10, 6))
+plt.scatter(y_test, y_pred, alpha=0.6, color='green', label='Predicted Values')
 plt.plot(y_test, best_fit_line, color='red', linewidth=2, label='Best Fit Line')
- 
+plt.title('Model Predictions vs Actual')
+plt.xlabel('True Values (y_test)')
+plt.ylabel('Predicted Values (y_pred)')
+plt.text(0.05, 0.95, f"MSE: {mse:.4f}\nR²: {r2:.4f}", fontsize=12, transform=plt.gca().transAxes,
+         verticalalignment='top', bbox=dict(facecolor='white', alpha=0.8, edgecolor='gray'))
+plt.legend()
 
-# Add annotations
+# Save the scatter plot
+plt.savefig(learning_base_dir + '/annScatterPlot.png')
 
-plt.title('ANN Predictions vs Best Fit Line', fontsize=14)
+# Store model performance in markdown format for documentation
+metrics_summary = {
+    'Total Training Iterations': num_iterations,
+    'Final Loss': final_loss,
+    'Final MAE': final_mae,
+    'Test Loss': loss,
+    'Test MAE': mae,
+    'MSE': mse,
+    'R²': r2
+}
 
-plt.xlabel('True Values (y_test)', fontsize=12)
+metrics_df = pd.DataFrame(metrics_summary, index=[0])
+metrics_df.to_markdown(learning_base_dir + '/annMetricsSummary.md')
 
-plt.ylabel('Predicted Values (y_pred)', fontsize=12)
-
-plt.legend(fontsize=10)
- 
-# Display metrics
-
-plt.text(
-
-    0.05, 0.95,
-
-    f"MSE: {mse:.4f}\nR²: {r2:.4f}",
-
-    fontsize=10,
-
-    transform=plt.gca().transAxes,
-
-    verticalalignment='top',
-
-    bbox=dict(facecolor='white', alpha=0.8, edgecolor='gray')
-
-)
- 
-plt.grid(alpha=0.3)
-
-plt.legend(loc = "upper center")
-
-plt.savefig('../results/images/M_best_fit_line_scatter.png')
-
-plt.show()
-
- 
-
-
+print("Training, evaluation, and visualization are saved successfully.")

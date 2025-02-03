@@ -1,0 +1,17 @@
+version: "3.9"
+ 
+services:
+  activationBase:
+    build: .
+    image: olexuni/codebase_arpuprediction
+    volumes:
+      - ai_system:/tmp
+    command:
+      - sh
+      - "-c"
+      - |
+        mkdir -p /tmp/codeBase/ && rm -rf /tmp/codeBase/ && cp -r /codeBase/ /tmp/ ;
+ 
+volumes:
+  ai_system:
+    external: true

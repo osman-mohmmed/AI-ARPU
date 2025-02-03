@@ -1,0 +1,18 @@
+version: "3.9"
+ 
+services:
+  knowledgeBase:
+    build: .
+    image: olexuni/knowledgebase_arpuprediction
+    volumes:
+      - ai_system:/tmp
+    command:
+      - sh
+      - "-c"
+      - |
+        rm -rf /tmp/knowledgeBase/ && cp -r /knowledgeBase/ /tmp/ ;
+    
+ 
+volumes:
+  ai_system:
+    external: true

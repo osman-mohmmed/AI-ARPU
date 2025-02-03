@@ -1,0 +1,11 @@
+numpy
+pandas
+tensorflow
+requests
+bs4
+tabulate
+seaborn
+scikit-learn
+scipy
+statsmodels
+matplotlib

@@ -1,0 +1,17 @@
+version: "3.9"
+ 
+services:
+  activationBase:
+    build: .
+    image: olexuni/activationbase_arpuprediction
+    volumes:
+      - ai_system:/tmp
+    command:
+      - sh
+      - "-c"
+      - |
+        rm -rf /tmp/activationBase/ && cp -r /activationBase/ /tmp/ ;
+ 
+volumes:
+  ai_system:
+    external: true

@@ -99,6 +99,13 @@ python -m venv venv
 
 ---
 
+##### Linux:
+
+1. Follow the installation instructions from Docker website:
+   [Docker Desk for linux](https://docs.docker.com/desktop/setup/install/linux/)
+
+---
+
 ##### Mac:
 
 1. Download the Docker Desktop installer for Mac from the official Docker website:
@@ -106,10 +113,12 @@ python -m venv venv
 
 2. Run the installer and follow the instructions. After installation, Docker will start automatically.
 
+---
 
-### 2- Setting Up the Environment
 
-To set up the environment and start using the project, follow these steps:
+### 2- Use Case for applying ANN moldel on activation data:
+
+To apply the ANN molde to predict ARPU of signle data poit, follow these steps:
 
 1. **Clone the repository**:
    ```bash
@@ -128,16 +137,21 @@ To set up the environment and start using the project, follow these steps:
    ```
    This will create the necessary Docker containers for running the model training and inference.
 
-4. **Navigate to the models**  
+4. **Navigate to the annSolution compose-file**  
    Following those commands based on your own path where you have downloaded the repository, then navigate to Scenarios directory where we have the ANN & OLS models.
    ```bash
-   cd <yourPath>\AIBAS\AI-ARPU\scenarios\apply_annSolution_for_arpuPrediction
-   docker-compose up   
-   ```  
-5. **Apply the same for OLS model**  
-   ```bash
-   cd <yourPath>\AIBAS\AI-ARPU\scenarios\apply_olsSolution_for_arpuPrediction
+   cd <yourPath>\AI-ARPU\scenarios\apply_annSolution_for_arpuPrediction
    docker-compose up   
    ```
+   
+5. **Apply the same for OLS model**  
+   ```bash
+   cd <yourPath>\AI-ARPU\scenarios\apply_olsSolution_for_arpuPrediction
+   docker-compose up   
+   ```
+**One should expect resluts like below**
+
+![image info](./results/visualization/scenarios-output-mac.png)
+   
 By running those docker files, it will bulid the whole ANN and OLS applications starting from the knowledgeBase, then activationBase and codeBasefile and eventually both models.   
 for more information about the content of the docker files and the conatiners, kindly refer to the project's [github](https://github.com/osman-mohmmed/AI-ARPU.git)

@@ -3,8 +3,6 @@
 *__pycache__*
 *.pyc
 
-# ignore ALL files in ANY directory named temp
-temp/ 
+# ignore ALL files in ANY directory below
 code/logs
-code/experiments/logs
-code/messageClient/logs
+code/src

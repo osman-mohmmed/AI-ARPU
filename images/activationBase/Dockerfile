@@ -17,4 +17,4 @@ LABEL course="M.Grum: Advanced AI-based Application Systems"
 LABEL university="University of Potsdam"
 LABEL license="AGPL-3.0"
 
-CMD ["sh", "-c"]  # Use sh instead of bash
+# CMD ["sh", "-c"]  # Use sh instead of bash

@@ -19,24 +19,24 @@ In this project we used two different models:
 
 **2- Artificial Neural Network (ANN)** A deep learning approach for complex relationships.  
 
-The project is structured to follow the AI-CPS framework, an open-source platform for cyber-physical systems originally developed by **Dr.-Ing. Marcus Grum**. We forked AI-CPS and adapted its structure to include:  
+The project is structured to follow the AI-CPS framework, an open-source platform for cyber-physical systems originally developed by **Dr.-Ing. Marcus Grum**. We forked AI-CPS and adapted its structure to include following images:  
 
-**- KnowledgeBase:** Stores trained AI model.  
+**- KnowledgeBase:** Provide trained AI model at "tmp/knowledgeBase/".  
 
-**- ActivationBase:** Stores activation data used to run AI models.  
+**- ActivationBase:** Provide 'activatio_data.csv' at "tmp/activationBase/".  
 
-**- LearningBase:** Stores training logs, validation metrics, results, and model visualizations.  
+**- LearningBase:** Provide 'training_data.csv' at "tmp/learningBase/train/" and 'test_data.csv' at "tmp/learningBase/validation/" also Stores training logs, validation metrics, results, and model visualization.  
 
-**- CodeBase:** Stores Python scripts for model training, and evaluation.  
+**- CodeBase:** Provide Python scripts for data scraping and cleaning, AI model training and evaluation.  
 
- And it is fully containerized using Docker, and the images are published to the public [dockershub](https://hub.docker.com/r/olexuni/codebase_arpuprediction) making it easy to deploy across different environments.  
+ And it is fully containerized using Docker, and the images are published to the public [dockershub](https://hub.docker.com/r/olexuni) making it easy to deploy across different environments.  
 
 
 ## Getting Started
 The dataset is scraped from the publicly avaiable [dataset](https://www.kaggle.com/datasets/shivam131019/telecom-churn-dataset?resource=download&select=telecom_churn_data.csv) on Kaggle, the data is then scraped from a [repostory](https://raw.githubusercontent.com/osman-mohmmed/aibas/refs/heads/main/data/telecom_arpu_data.md). later on its processed, and prepared for training a AI model to predict ARPU values based on various customer features. By utilizing `TensorFlow`.     
 
 ### 1) Prerequisites
-Before you begin, ensure you have the following installed: Python 3.7+, Docker. Additionally, you will need Python libraries such as: TensorFlow, Pandas, Numpy, Matplotlib and Scikit-learn.   
+Before you begin, ensure you have the following installed: git client, Python 3.7+, Docker. Additionally, you will need Python libraries such as: TensorFlow, Pandas, Numpy, Matplotlib and Scikit-learn.   
 
 ### Installation Instructions
 #### Python and other dependancies.

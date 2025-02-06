@@ -2,7 +2,7 @@
 
 Authors: Osman Mohammd & Sara MohammedAhmed  
 
-Course: M. Grum: Advanced AI-based Application Systems  
+Course: M. Grum: Advanced AI-based Application Systems “AIBAS” Data Science and Business Analytics
 
 Institution: University of Potsdam  
 
